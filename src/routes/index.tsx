@@ -31,6 +31,8 @@ import g5Raw from "@/assets/Jasa_Umrah_Surabaya.jpg.asset.json";
 import g6Raw from "@/assets/Ibadah_Jamaah_Sultan_Haramain_Gresik.jpg.asset.json";
 import g7Raw from "@/assets/Umrah_Terpercaya_Lamongan.jpg.asset.json";
 import g8Raw from "@/assets/Agen_Umrah_Resmi_Tuban.jpg.asset.json";
+import { getSiteSections } from "@/lib/site-content.functions";
+import { contentOf, isVisible, list, str, type SectionContent } from "@/lib/site-content";
 
 type AssetJson = { url: string };
 const g1 = g1Raw as AssetJson;
@@ -49,6 +51,7 @@ const WA =
   );
 
 export const Route = createFileRoute("/")({
+  loader: () => getSiteSections(),
   head: () => ({
     meta: [
       {
@@ -103,7 +106,7 @@ function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   );
 }
 
-function Header() {
+function Header({ c }: { c: SectionContent }) {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
@@ -113,28 +116,29 @@ function Header() {
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm text-foreground sm:text-base">
-              Sultan Barokah Haramain
+              {str(c, "brand")}
             </p>
             <p className="truncate text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-              Kantor Cabang Gresik
+              {str(c, "subtitle")}
             </p>
           </div>
         </div>
         <div className="col-span-2 order-3 flex justify-center lg:order-none lg:col-span-1">
           <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3 py-1.5 text-[10px] font-semibold text-gold sm:text-xs">
             <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
-            Resmi Berizin Kemenag PPIU: 0404230002256000
+            {str(c, "badge")}
           </span>
         </div>
         <WhatsAppButton className="shrink-0 px-4 py-2 text-xs sm:text-sm">
-          <MessageCircle className="h-4 w-4" /> Daftar Mitra
+          <MessageCircle className="h-4 w-4" /> {str(c, "cta")}
         </WhatsAppButton>
       </div>
     </header>
   );
 }
 
-function Hero() {
+function Hero({ c }: { c: SectionContent }) {
+  const stats = list<{ label?: string; value?: string }>(c, "stats");
   return (
     <section className="relative overflow-hidden">
       <img
@@ -147,33 +151,31 @@ function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_0%,transparent,var(--background))]" />
       <div className="relative mx-auto max-w-5xl px-4 py-20 text-center sm:px-6 md:py-28">
         <p className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-          Biar orang lain hanya wacana
+          {str(c, "eyebrow")}
         </p>
         <h1 className="text-3xl font-semibold leading-tight text-foreground sm:text-4xl md:text-5xl">
-          <span className="text-gradient-gold">ANDA YANG BUKTIKAN!</span> Raih Komisi Jutaan, Bonus
-          Kendaraan, & Gengsi Positif Sebagai Travelpreneur Resmi PT Sultan Barokah Haramain Gresik
+          <span className="text-gradient-gold">{str(c, "title_highlight")}</span>{" "}
+          {str(c, "title")}
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Jangan cuma jadi penonton saat rekan atau tetangga mulai sukses berpenghasilan dari rumah.
-          Saatnya ambil peran utama, buktikan kapasitas Anda, dan raih apresiasi setara Sultan yang
-          membuat orang lain berdecak kagum.
+          {str(c, "description")}
         </p>
         <div className="mt-9 flex justify-center">
           <WhatsAppButton className="px-7 py-4 text-sm sm:text-base">
             <MessageCircle className="h-5 w-5" />
-            Ambil Posisi Mitra Sekarang — WhatsApp 0811-3107-707
+            {str(c, "cta")}
           </WhatsAppButton>
         </div>
         <div className="mt-10 grid grid-cols-2 gap-3 text-left sm:grid-cols-4">
-          {[
-            ["Komisi Tunai", "Jutaan / Jemaah"],
-            ["Reward", "Motor & Mobil"],
-            ["Wilayah", "Anti-Kanibal"],
-            ["Legalitas", "PPIU Kemenag"],
-          ].map(([k, v]) => (
-            <div key={k} className="rounded-xl border border-gold/25 panel-gradient px-4 py-3">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{k}</p>
-              <p className="mt-1 text-sm font-semibold text-gold">{v}</p>
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-xl border border-gold/25 panel-gradient px-4 py-3"
+            >
+              <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                {s.label}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-gold">{s.value}</p>
             </div>
           ))}
         </div>
@@ -182,81 +184,72 @@ function Hero() {
   );
 }
 
-const AUDIENCE = [
-  { icon: BookOpenCheck, title: "Guru Ngaji", desc: "Amanah ilmu Anda kini bernilai penghasilan." },
-  { icon: GraduationCap, title: "Ustadzah TPQ", desc: "Dipercaya wali santri, mudah dipercaya jemaah." },
-  { icon: Users, title: "Guru Sekolah", desc: "Jaringan rekan guru & orang tua adalah aset." },
-  { icon: HeartHandshake, title: "Kader PKK", desc: "Aktif di masyarakat, dekat dengan warga." },
-  { icon: Star, title: "Ketua Majelis Taklim", desc: "Punya jamaah setia yang merindukan tanah suci." },
-  { icon: Sparkles, title: "Ibu Rumah Tangga", desc: "Usia 25–55 tahun, ingin mandiri finansial." },
-];
+const AUDIENCE_ICONS = [BookOpenCheck, GraduationCap, Users, HeartHandshake, Star, Sparkles];
 
-function Audience() {
+function Audience({ c }: { c: SectionContent }) {
+  const items = list<{ title?: string; desc?: string }>(c, "items");
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-      <SectionTitle
-        eyebrow="Untuk Anda di Gresik"
-        title="Kami Menyapa Hangat Para Perempuan Tangguh & Tokoh Umat"
-      />
+      <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {AUDIENCE.map(({ icon: Icon, title, desc }) => (
-          <div
-            key={title}
-            className="rounded-2xl border border-gold/30 panel-gradient p-6 transition-colors hover:border-gold/60"
-          >
-            <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-gold/30 bg-gold/10">
-              <Icon className="h-5 w-5 text-gold" />
+        {items.map((item, i) => {
+          const Icon = AUDIENCE_ICONS[i % AUDIENCE_ICONS.length]!;
+          return (
+            <div
+              key={item.title ?? i}
+              className="rounded-2xl border border-gold/30 panel-gradient p-6 transition-colors hover:border-gold/60"
+            >
+              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-gold/30 bg-gold/10">
+                <Icon className="h-5 w-5 text-gold" />
+              </div>
+              <h3 className="text-lg text-foreground">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
             </div>
-            <h3 className="text-lg text-foreground">{title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 }
 
-function TwoSides() {
-  const cols = [
-    {
-      badge: "Sisi Prestige & Pembuktian Diri",
-      items: [
-        { icon: Wallet, t: "Komisi Tunai Jutaan Rupiah", d: "Dibayarkan per jemaah yang berangkat, transparan dan tercatat rapi." },
-        { icon: Car, t: "Bonus Reward Kendaraan", d: "Motor hingga mobil untuk mitra dengan pencapaian terbaik." },
-        { icon: Crown, t: "Status Wanita Berdikari", d: "Transformasi status sosial menjadi sosok mandiri yang disegani." },
-      ],
-    },
-    {
-      badge: "Sisi Amal Jariyah & Manfaat Sosial",
-      items: [
-        { icon: Sparkles, t: "Ladang Pahala Tanpa Batas", d: "Menjadi perantara berangkatnya para tamu Allah ke tanah suci." },
-        { icon: HeartHandshake, t: "Keberkahan Keluarga", d: "Rezeki halal yang membawa ketenangan bagi rumah tangga." },
-        { icon: Users, t: "Ukhuwah Islamiyah Meluas", d: "Silaturahmi bertambah, jaringan dakwah semakin kuat." },
-      ],
-    },
-  ];
+const SIDE_ICONS = [
+  [Wallet, Car, Crown],
+  [Sparkles, HeartHandshake, Users],
+];
+
+function TwoSides({ c }: { c: SectionContent }) {
+  const cols = list<{ badge?: string; items?: { title?: string; desc?: string }[] }>(c, "columns");
   return (
     <section className="border-y border-border bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-        <SectionTitle eyebrow="Dual Benefit" title="Dua Sisi Kekuatan Mitra" />
+        <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
         <div className="grid gap-6 lg:grid-cols-2">
-          {cols.map((col) => (
-            <div key={col.badge} className="rounded-3xl border border-gold/30 panel-gradient p-6 sm:p-8">
+          {cols.map((col, ci) => (
+            <div
+              key={col.badge ?? ci}
+              className="rounded-3xl border border-gold/30 panel-gradient p-6 sm:p-8"
+            >
               <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">
                 {col.badge}
               </span>
               <ul className="mt-6 space-y-5">
-                {col.items.map(({ icon: Icon, t, d }) => (
-                  <li key={t} className="flex gap-4">
-                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-gold/25 bg-gold/5">
-                      <Icon className="h-4.5 w-4.5 text-gold" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-semibold text-foreground">{t}</p>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{d}</p>
-                    </div>
-                  </li>
-                ))}
+                {(col.items ?? []).map((it, ii) => {
+                  const group = SIDE_ICONS[ci % SIDE_ICONS.length]!;
+                  const Icon = group[ii % group.length]!;
+                  return (
+                    <li key={it.title ?? ii} className="flex gap-4">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-gold/25 bg-gold/5">
+                        <Icon className="h-4.5 w-4.5 text-gold" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground">{it.title}</p>
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          {it.desc}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -266,86 +259,71 @@ function TwoSides() {
   );
 }
 
-const KECAMATAN = [
-  ["Manyar", "13.200"],
-  ["Kebomas", "11.850"],
-  ["Menganti", "15.500"],
-  ["Driyorejo", "12.400"],
-  ["Cerme", "9.300"],
-  ["Duduksampeyan", "7.100"],
-];
-
-function Territory() {
+function Territory({ c }: { c: SectionContent }) {
+  const districts = list<{ name?: string; potential?: string }>(c, "districts");
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-      <SectionTitle
-        eyebrow="Live Territory Data"
-        title="Data Teritorial & Potensi Wilayah Kabupaten Gresik"
-      />
+      <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">
           <div className="rounded-2xl border border-gold/30 panel-gradient p-6">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              Statistik Populasi
+              {str(c, "population_label")}
             </p>
-            <p className="mt-3 text-3xl font-bold text-gold sm:text-4xl">1.304.203 Jiwa</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Total populasi Kabupaten Gresik (sumber: BPS) — pasar jemaah umrah yang sangat luas.
+            <p className="mt-3 text-3xl font-bold text-gold sm:text-4xl">
+              {str(c, "population_value")}
             </p>
+            <p className="mt-2 text-sm text-muted-foreground">{str(c, "population_desc")}</p>
           </div>
           <div className="rounded-2xl border border-accent/40 bg-accent/10 p-6">
             <div className="flex items-center gap-2 text-accent-foreground">
               <Lock className="h-4 w-4 shrink-0 text-gold" />
-              <p className="font-semibold text-gold">Sistem Anti-Kanibal Antar Agen</p>
+              <p className="font-semibold text-gold">{str(c, "lock_title")}</p>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Wilayah garapan setiap mitra dikunci dan dilindungi. Tidak ada perebutan prospek antar
-              sesama agen — Anda bekerja tenang di teritori sendiri.
+              {str(c, "lock_desc")}
             </p>
           </div>
         </div>
         <div className="rounded-2xl border border-gold/30 panel-gradient p-6">
           <div className="mb-5 flex items-center gap-2">
             <MapPinned className="h-4 w-4 text-gold" />
-            <p className="text-sm font-semibold text-foreground">
-              Peta Teritorial & Estimasi Potensi Pasar
-            </p>
+            <p className="text-sm font-semibold text-foreground">{str(c, "map_title")}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            {KECAMATAN.map(([name, val]) => (
+            {districts.map((d, i) => (
               <div
-                key={name}
+                key={d.name ?? i}
                 className="rounded-xl border border-border bg-background/50 px-4 py-3"
               >
-                <p className="text-sm font-semibold text-foreground">Kecamatan {name}</p>
-                <p className="mt-1 text-xs text-gold">± {val} potensi jemaah</p>
+                <p className="text-sm font-semibold text-foreground">Kecamatan {d.name}</p>
+                <p className="mt-1 text-xs text-gold">± {d.potential} potensi jemaah</p>
               </div>
             ))}
           </div>
-          <p className="mt-5 text-xs text-muted-foreground">
-            Kuota mitra per kecamatan dibatasi untuk menjaga kualitas layanan dan penghasilan mitra.
-          </p>
+          <p className="mt-5 text-xs text-muted-foreground">{str(c, "note")}</p>
         </div>
       </div>
     </section>
   );
 }
 
-const LEADERS = [
-  { rank: 2, name: "Ustadzah Nur Aini", jamaah: 96, komisi: "Rp 184 Juta", reward: "Motor Matic Premium" },
-  { rank: 1, name: "Hj. Siti Maryam", jamaah: 152, komisi: "Rp 312 Juta", reward: "Mobil Keluarga" },
-  { rank: 3, name: "Bu Rohmah Kader PKK", jamaah: 74, komisi: "Rp 141 Juta", reward: "Umrah Gratis" },
-];
-
-function HallOfFame() {
+function HallOfFame({ c }: { c: SectionContent }) {
+  const leaders = list<{
+    rank?: number;
+    name?: string;
+    jamaah?: string;
+    komisi?: string;
+    reward?: string;
+  }>(c, "leaders");
   return (
     <section className="border-y border-border bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-        <SectionTitle eyebrow="Hall of Fame" title="Leaderboard Top 3 Agen Terbaik" />
+        <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
         <div className="grid gap-5 md:grid-cols-3 md:items-end">
-          {LEADERS.map((l) => (
+          {leaders.map((l, i) => (
             <div
-              key={l.rank}
+              key={l.name ?? i}
               className={`rounded-3xl border p-6 text-center panel-gradient ${
                 l.rank === 1 ? "border-gold shadow-[var(--shadow-gold)] md:pb-10" : "border-gold/25"
               }`}
@@ -379,47 +357,37 @@ function HallOfFame() {
   );
 }
 
-function Tools() {
+function Tools({ c }: { c: SectionContent }) {
+  const appItems = list<string>(c, "app_items");
+  const academyItems = list<string>(c, "academy_items");
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-      <SectionTitle eyebrow="Dikasih Kemudahan" title="Aplikasi Mitra Center & Akademi Kemitraan" />
+      <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-gold/30 panel-gradient p-6 sm:p-8">
           <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-gold/30 bg-gold/10">
             <Smartphone className="h-5 w-5 text-gold" />
           </div>
-          <h3 className="text-xl text-foreground">Aplikasi Mitra Center</h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Buku saku digital terpusat: kelola data jemaah, pantau progres keberangkatan, dan lihat
-            pencatatan komisi secara real-time dari genggaman Anda.
-          </p>
+          <h3 className="text-xl text-foreground">{str(c, "app_title")}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(c, "app_desc")}</p>
           <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
-            {["Manajemen data jemaah", "Pencatatan & rekap komisi", "Status dokumen dan jadwal"].map(
-              (i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <BadgeCheck className="h-4 w-4 shrink-0 text-gold" /> {i}
-                </li>
-              ),
-            )}
+            {appItems.map((i) => (
+              <li key={i} className="flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 shrink-0 text-gold" /> {i}
+              </li>
+            ))}
           </ul>
         </div>
         <div className="rounded-3xl border border-gold/30 panel-gradient p-6 sm:p-8">
           <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl border border-gold/30 bg-gold/10">
             <GraduationCap className="h-5 w-5 text-gold" />
           </div>
-          <h3 className="text-xl text-foreground">Akademi Kemitraan</h3>
+          <h3 className="text-xl text-foreground">{str(c, "academy_title")}</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Modul kursus online interaktif yang membentuk Anda jadi travelpreneur profesional.
+            {str(c, "academy_desc")}
           </p>
           <ul className="mt-5 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-            {[
-              "Product Knowledge Paket November 2026",
-              "Riset Market Wilayah",
-              "Soft Skill Komunikasi",
-              "Teknik Closing Lembut Jemaah Senior",
-              "Panduan Fiqih Umrah",
-              "Sertifikasi Mitra Resmi",
-            ].map((i) => (
+            {academyItems.map((i) => (
               <li key={i} className="flex items-start gap-2">
                 <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {i}
               </li>
@@ -442,14 +410,11 @@ const GALLERY = [
   [g8, "Jemaah bersama pembimbing di Madinah"],
 ] as const;
 
-function Gallery() {
+function Gallery({ c }: { c: SectionContent }) {
   return (
     <section className="border-y border-border bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
-        <SectionTitle
-          eyebrow="Dokumentasi Lapangan"
-          title="Galeri Aksi Nyata Mitra & Jemaah Kami"
-        />
+        <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {GALLERY.map(([img, alt]) => (
             <figure
@@ -472,46 +437,49 @@ function Gallery() {
   );
 }
 
-function Legality() {
-  const rows = [
-    { icon: Crown, label: "Badan Hukum", value: "PT Sultan Barokah Haramain (Kantor Cabang Gresik)" },
-    { icon: ShieldCheck, label: "Nomor Izin PPIU (Kemenag)", value: "0404230002256000" },
-    { icon: Globe, label: "Website Resmi", value: "sultanharamaingresik.com" },
-    { icon: Phone, label: "WhatsApp Resmi", value: "0811-3107-707" },
-  ];
+const LEGALITY_ICONS = [Crown, ShieldCheck, Globe, Phone];
+
+function Legality({ c }: { c: SectionContent }) {
+  const rows = list<{ label?: string; value?: string }>(c, "rows");
   return (
     <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 md:py-24">
-      <SectionTitle eyebrow="Legalitas" title="Kepercayaan Mutlak, Bukan Sekadar Janji" />
+      <SectionTitle eyebrow={str(c, "eyebrow")} title={str(c, "title")} />
       <div className="rounded-3xl border border-gold/40 panel-gradient p-6 sm:p-8">
         <dl className="grid gap-4 sm:grid-cols-2">
-          {rows.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="rounded-2xl border border-border bg-background/40 p-5">
-              <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                <Icon className="h-4 w-4 shrink-0 text-gold" /> {label}
-              </dt>
-              <dd className="mt-2 font-semibold text-foreground">{value}</dd>
-            </div>
-          ))}
+          {rows.map((row, i) => {
+            const Icon = LEGALITY_ICONS[i % LEGALITY_ICONS.length]!;
+            return (
+              <div
+                key={row.label ?? i}
+                className="rounded-2xl border border-border bg-background/40 p-5"
+              >
+                <dt className="flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  <Icon className="h-4 w-4 shrink-0 text-gold" /> {row.label}
+                </dt>
+                <dd className="mt-2 font-semibold text-foreground">{row.value}</dd>
+              </div>
+            );
+          })}
         </dl>
       </div>
     </section>
   );
 }
 
-function FinalCta() {
+function FinalCta({ c }: { c: SectionContent }) {
   return (
     <section className="border-t border-gold/30 bg-surface">
       <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6">
         <HandCoins className="mx-auto h-8 w-8 text-gold" />
         <h2 className="mt-5 text-2xl font-semibold text-foreground sm:text-3xl md:text-4xl">
-          Jangan Tunggu Sampai Tetangga Anda Duluan yang Mengamankan Kuota Wilayah Kecamatan Anda!
+          {str(c, "title")}
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-          Kuota mitra per kecamatan terbatas. Amankan teritori Anda hari ini juga.
+          {str(c, "description")}
         </p>
         <div className="mt-8 flex justify-center">
           <WhatsAppButton className="px-8 py-4 text-base">
-            <MessageCircle className="h-5 w-5" /> DAFTAR SEKARANG — KLIK DISINI
+            <MessageCircle className="h-5 w-5" /> {str(c, "cta")}
             <ArrowRight className="h-4 w-4" />
           </WhatsAppButton>
         </div>
@@ -520,38 +488,39 @@ function FinalCta() {
   );
 }
 
-function Footer() {
+function Footer({ c }: { c: SectionContent }) {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-8 text-center sm:px-6">
         <div className="flex items-center justify-center gap-2 text-gold">
           <Crown className="h-4 w-4" />
-          <span className="font-display text-sm">PT Sultan Barokah Haramain</span>
+          <span className="font-display text-sm">{str(c, "brand")}</span>
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Copyright © 2026 PT Sultan Barokah Haramain — Kantor Cabang Gresik. Semua Hak Dilindungi.
-        </p>
+        <p className="mt-3 text-xs text-muted-foreground">{str(c, "copyright")}</p>
       </div>
     </footer>
   );
 }
 
 function Index() {
+  const sections = Route.useLoaderData();
+  const show = (key: string) => isVisible(sections, key);
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      {show("header") ? <Header c={contentOf(sections, "header")} /> : null}
       <main>
-        <Hero />
-        <Audience />
-        <TwoSides />
-        <Territory />
-        <HallOfFame />
-        <Tools />
-        <Gallery />
-        <Legality />
-        <FinalCta />
+        {show("hero") ? <Hero c={contentOf(sections, "hero")} /> : null}
+        {show("audience") ? <Audience c={contentOf(sections, "audience")} /> : null}
+        {show("two_sides") ? <TwoSides c={contentOf(sections, "two_sides")} /> : null}
+        {show("territory") ? <Territory c={contentOf(sections, "territory")} /> : null}
+        {show("hall_of_fame") ? <HallOfFame c={contentOf(sections, "hall_of_fame")} /> : null}
+        {show("tools") ? <Tools c={contentOf(sections, "tools")} /> : null}
+        {show("gallery") ? <Gallery c={contentOf(sections, "gallery")} /> : null}
+        {show("legality") ? <Legality c={contentOf(sections, "legality")} /> : null}
+        {show("final_cta") ? <FinalCta c={contentOf(sections, "final_cta")} /> : null}
       </main>
-      <Footer />
+      {show("footer") ? <Footer c={contentOf(sections, "footer")} /> : null}
     </div>
   );
 }
