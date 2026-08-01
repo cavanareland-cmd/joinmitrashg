@@ -15,6 +15,7 @@ export const DEFAULT_CONTENT: Record<string, SectionContent> = {
     subtitle: "Kantor Cabang Gresik",
     badge: "Resmi Berizin Kemenag PPIU: 0404230002256000",
     cta: "Daftar Mitra",
+    logo_url: "/__l5e/assets-v1/f179f998-317a-4834-a016-e4ff2c7b511b/sultan-haramain-logo.png",
   },
   hero: {
     eyebrow: "Biar orang lain hanya wacana",

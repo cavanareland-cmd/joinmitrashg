@@ -111,8 +111,17 @@ function Header({ c }: { c: SectionContent }) {
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-gold/40 panel-gradient">
-            <Crown className="h-5 w-5 text-gold" />
+          <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-xl border border-gold/40 panel-gradient">
+            {str(c, "logo_url") ? (
+              <img
+                src={str(c, "logo_url")}
+                alt={`Logo ${str(c, "brand")}`}
+                className="h-9 w-9 object-contain"
+                loading="eager"
+              />
+            ) : (
+              <Crown className="h-5 w-5 text-gold" />
+            )}
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm text-foreground sm:text-base">
