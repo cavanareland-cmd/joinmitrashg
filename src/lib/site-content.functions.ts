@@ -7,9 +7,17 @@ import type { SectionContent, SiteSection } from "./site-content";
 
 export const getSiteSections = createServerFn({ method: "GET" }).handler(
   async (): Promise<SiteSection[]> => {
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-    const url = process.env["SUPABASE_URL"]!;
-    const client = createClient<Database>(url, key, {
+    // On external hosting (e.g. Vercel) the server-side vars may be missing.
+    // Fall back to the public VITE_* vars and never throw: the landing page
+    // must still render with its built-in default content.
+    const key =
+      process.env["SUPABASE_PUBLISHABLE_KEY"] ??
+      process.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ??
+      "";
+    const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"] ?? "";
+    if (!url || !key) return [];
+    try {
+      const client = createClient<Database>(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
       global: {
         fetch: (input, init) => {
@@ -21,19 +29,22 @@ export const getSiteSections = createServerFn({ method: "GET" }).handler(
           return fetch(input, { ...init, headers: h });
         },
       },
-    });
-    const { data, error } = await client
-      .from("site_sections")
-      .select("section_key, label, sort_order, is_visible, content")
-      .order("sort_order", { ascending: true });
-    if (error) return [];
-    return (data ?? []).map((row) => ({
-      section_key: row.section_key,
-      label: row.label,
-      sort_order: row.sort_order,
-      is_visible: row.is_visible,
-      content: (row.content ?? {}) as SectionContent,
-    }));
+      });
+      const { data, error } = await client
+        .from("site_sections")
+        .select("section_key, label, sort_order, is_visible, content")
+        .order("sort_order", { ascending: true });
+      if (error) return [];
+      return (data ?? []).map((row) => ({
+        section_key: row.section_key,
+        label: row.label,
+        sort_order: row.sort_order,
+        is_visible: row.is_visible,
+        content: (row.content ?? {}) as SectionContent,
+      }));
+    } catch {
+      return [];
+    }
   },
 );
 
