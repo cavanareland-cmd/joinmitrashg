@@ -51,7 +51,13 @@ const WA =
   );
 
 export const Route = createFileRoute("/")({
-  loader: () => getSiteSections(),
+  loader: async () => {
+    try {
+      return await getSiteSections();
+    } catch {
+      return [];
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -76,6 +82,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
+  errorComponent: () => <Index />,
 });
 
 function WhatsAppButton({
