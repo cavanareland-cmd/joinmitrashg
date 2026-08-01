@@ -198,7 +198,7 @@ function FieldEditor({
           <div key={k} className={Array.isArray(obj[k]) ? "sm:col-span-2" : ""}>
             <FieldEditor
               name={k}
-              value={obj[k]}
+              value={obj[k] ?? ""}
               onChange={(next) => onChange({ ...obj, [k]: next })}
             />
           </div>
