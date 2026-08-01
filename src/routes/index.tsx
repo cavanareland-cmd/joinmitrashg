@@ -519,7 +519,7 @@ function Footer({ c }: { c: SectionContent }) {
 }
 
 function Index() {
-  const sections = Route.useLoaderData();
+  const sections = Route.useLoaderData() ?? [];
   const show = (key: string) => isVisible(sections, key);
 
   return (
