@@ -82,7 +82,8 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
-  errorComponent: () => <Index />,
+  errorComponent: () => <Page sections={[]} />,
+  notFoundComponent: () => <Page sections={[]} />,
 });
 
 function WhatsAppButton({
@@ -520,6 +521,10 @@ function Footer({ c }: { c: SectionContent }) {
 
 function Index() {
   const sections = Route.useLoaderData() ?? [];
+  return <Page sections={sections} />;
+}
+
+function Page({ sections }: { sections: ReturnType<typeof Route.useLoaderData> }) {
   const show = (key: string) => isVisible(sections, key);
 
   return (
