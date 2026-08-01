@@ -23,14 +23,24 @@ import {
 } from "lucide-react";
 
 import heroBg from "@/assets/hero-bg.jpg";
-import g1 from "@/assets/Jamaah_Sultan_Haramain_Gresik.jpg.asset.json";
-import g2 from "@/assets/Umrah_Murah_di_Gresik.jpg.asset.json";
-import g3 from "@/assets/Sultan_Haramain_Gresik_Raya.jpg.asset.json";
-import g4 from "@/assets/Agen_Travel_Umrah_Resmi_Gresik.jpg.asset.json";
-import g5 from "@/assets/Jasa_Umrah_Surabaya.jpg.asset.json";
-import g6 from "@/assets/Ibadah_Jamaah_Sultan_Haramain_Gresik.jpg.asset.json";
-import g7 from "@/assets/Umrah_Terpercaya_Lamongan.jpg.asset.json";
-import g8 from "@/assets/Agen_Umrah_Resmi_Tuban.jpg.asset.json";
+import g1Raw from "@/assets/Jamaah_Sultan_Haramain_Gresik.jpg.asset.json";
+import g2Raw from "@/assets/Umrah_Murah_di_Gresik.jpg.asset.json";
+import g3Raw from "@/assets/Sultan_Haramain_Gresik_Raya.jpg.asset.json";
+import g4Raw from "@/assets/Agen_Travel_Umrah_Resmi_Gresik.jpg.asset.json";
+import g5Raw from "@/assets/Jasa_Umrah_Surabaya.jpg.asset.json";
+import g6Raw from "@/assets/Ibadah_Jamaah_Sultan_Haramain_Gresik.jpg.asset.json";
+import g7Raw from "@/assets/Umrah_Terpercaya_Lamongan.jpg.asset.json";
+import g8Raw from "@/assets/Agen_Umrah_Resmi_Tuban.jpg.asset.json";
+
+type AssetJson = { url: string };
+const g1 = g1Raw as AssetJson;
+const g2 = g2Raw as AssetJson;
+const g3 = g3Raw as AssetJson;
+const g4 = g4Raw as AssetJson;
+const g5 = g5Raw as AssetJson;
+const g6 = g6Raw as AssetJson;
+const g7 = g7Raw as AssetJson;
+const g8 = g8Raw as AssetJson;
 
 const WA =
   "https://wa.me/6281131077070?text=" +
